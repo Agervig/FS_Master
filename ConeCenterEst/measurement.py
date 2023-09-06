@@ -9,10 +9,13 @@ from copy import deepcopy
 class Measurement:
     def __init__(self, indx):
         self.indx = indx
-        self.mask_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/Segmentation/experiments/masks"           #This is the output of the segmentation network
-        self.img_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/final_test/imgs_airport/"
+        #self.mask_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/Segmentation/experiments/masks"           #This is the output of the segmentation network
+        #self.img_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/old_data/final_test/imgs_airport/"
+        self.mask_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/masks"           #This is the output of the segmentation network
+        self.img_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/images_car/"
         self.pcd_path = "../data/pcds/"
-        self.csv_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/final_test/csv_airport/"              # LIDAR data
+        #self.csv_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/old_data/final_test/csv_airport/"              # LIDAR data
+        self.csv_path  = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/point_clouds/"
 
         self.image_type = ".jpg"
         self.cam_params = self.getCamParams()

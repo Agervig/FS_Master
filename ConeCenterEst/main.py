@@ -20,7 +20,8 @@ def get_cone_centers():
 
     ground_truth = np.arange(1, 10, 0.2)
 
-    csv_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/final_test/csv_airport"
+    #csv_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/old_data/final_test/csv_airport"
+    csv_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/point_clouds"
     
 
 
@@ -28,7 +29,6 @@ def get_cone_centers():
     for file in sorted(os.listdir(csv_path), key=lambda x: int(x[:-4])):
         start = time.time()
         indx = file[:-4]
-        print("HER: ", indx)
 
         measurement = Measurement(indx)
         measurement.projectLidarToImage()

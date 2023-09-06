@@ -12,6 +12,17 @@ import matplotlib.pyplot as plt
 
 import matplotlib.axis as axis
 
+
+#Cone numbering system:
+# Blue          : 0
+# Large orange  : 1
+# Small orange  : 2
+# Yellow        : 3
+
+#
+#18 gule (3) er observerat
+#41 blå (0)
+
 NO_PARTICLES = 100
 
 csv_folder = "data/csv"
@@ -155,28 +166,23 @@ def calc_RMSE(gt, obs):
 
 def main():
 
-    #Hvad er:
-        # odometry
-        # frames
-        #cumulative_transform
-
     csv_folder = "data/csv"
     #gt_path = "data/gt_airport_fixed_final.txt"
     #gt = get_gt(gt_path)
 
-    #odometry_data = "data/cone_centers_airport_filtered.txt"                                                                                            #path to GT cone centers. 
-    #cone_centers_odometry = fix_cone_centers(odometry_data)                                                                                              #Sorted GT cone centers in numpy array (sorted based on fourth column)
-    #frames_odometry = sort_by_frames(cone_centers_odometry)   # List of the frames, where each frame is array of all the cone centers
-    #correspondences = preprocess_odometry_est(frames_odometry) # Array of correspondences. (center of cones in frame t and t+1)
-    #odometry = get_odometry(correspondences)
+    odometry_data = "data/cone_centers_airport_filtered.txt"                                                                                            #path to GT cone centers. 
+    cone_centers_odometry = fix_cone_centers(odometry_data)                                                                                              #Sorted GT cone centers in numpy array (sorted based on fourth column)
+    frames_odometry = sort_by_frames(cone_centers_odometry)   # List of the frames, where each frame is array of all the cone centers
+    correspondences = preprocess_odometry_est(frames_odometry) # Array of correspondences. (center of cones in frame t and t+1)
+    odometry = get_odometry(correspondences)
 
     data_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/ConeCenterEst/experiments/cone_centers_airport_valid_lenscanline_timingtest.txt"
     cone_centers = fix_cone_centers(data_path)  #Loads the conecenter estimates into a numpy array
     #print(cone_centers)
     frames = sort_by_frames(cone_centers)   # List of the frames, where each frame is array of all the cone centers in that frame
-    correspondences = preprocess_odometry_est(frames)     #DET HER HAR JEG TILFØJET
+    #correspondences = preprocess_odometry_est(frames)     #DET HER HAR JEG TILFØJET
     #print(correspondences)
-    odometry = get_odometry(correspondences)                    # DET HER HAR JEG TILFØJET husk at udkommentere de rigtige linjer ovenfor
+    #odometry = get_odometry(correspondences)                    # DET HER HAR JEG TILFØJET husk at udkommentere de rigtige linjer ovenfor
 
     cumulative_transform = []
     current_transform = np.identity(3)
@@ -215,7 +221,7 @@ def main():
 
         # Animation
         save_animation = True
-        show_animation = False
+        show_animation = True
         if show_animation:  # pragma: no cover
             plt.cla()
             # for stopping simulation with the esc key.
@@ -228,8 +234,8 @@ def main():
             current_odometry_est = cumulative_transform[i]
             plt.plot(current_odometry_est[0, 2], current_odometry_est[1, 2], ".k", color="green")
 
-            gt_color_array = extract_cone_color(gt[:,2])
-            plt.scatter(gt[:,0], gt[:, 1], marker="o",color=gt_color_array, facecolor="none")
+            #gt_color_array = extract_cone_color(gt[:,2])
+            #plt.scatter(gt[:,0], gt[:, 1], marker="o",color=gt_color_array, facecolor="none")
 
             sign = math.atan2(-math.asin(current_odometry[0,1]), math.acos(current_odometry[0,0]))
             angle = math.acos(current_odometry[0, 0])

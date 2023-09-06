@@ -19,7 +19,7 @@ model.load_state_dict(torch.load("models/178.pth", map_location=device))
 
 model.eval()
 
-img_path = '/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/final_test/imgs_airport'
+img_path = '/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/old_data/final_test/imgs_airport'
 mask_path = '/home/agervig/git/FSM/MSc_Fstudent_SLAM/Segmentation/experiments/masks'
 start = time.time()
 

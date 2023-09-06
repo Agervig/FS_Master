@@ -11,7 +11,7 @@ img = cv2.imread(path_to_img, cv2.IMREAD_GRAYSCALE)
 detector = apriltag("tagStandard41h12")
 detections = detector.detect(img)
 
-print(dir(detections[0]))
+print(detections)
 
 
 
