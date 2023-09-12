@@ -23,7 +23,7 @@ model.eval()
 #img_path = '/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/old_data/final_test/imgs_airport'
 #mask_path = '/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/experiments/masks'
 img_path = '/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/images_car'
-mask_path = '/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/masks'
+mask_path = '/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/experiments/masks'
 
 start = time.time()
 

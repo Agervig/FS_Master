@@ -29,7 +29,7 @@ csv_folder = "data/csv"
 gt_path = "data/gt.txt"
 
 # Path to a folder that can be used to save all the data if show_animation and save_animation are set to True
-vis_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/SLAM/"
+vis_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/experiments/SLAM/"
 
 # Downsample the frames
 def downsample(cones, factor):
@@ -94,13 +94,17 @@ def preprocess_odometry_est(frames):
 
 def get_odometry(correspondences):
     transformations = []
-    prev_transform = None
+    #prev_transform = None
+
+    #added thomas:
+    prev_transform = np.identity(3)
 
     for i in range(len(correspondences)):
         current_frame = np.array(correspondences[i, 0])
         next_frame = np.array(correspondences[i, 1])
 
         if len(next_frame) == 0 or len(current_frame) == 0:
+            #print("I WAS HERE IN THIS SHIT")
             transformations.append(prev_transform)
             continue 
 
@@ -170,26 +174,33 @@ def main():
     #gt_path = "data/gt_airport_fixed_final.txt"
     #gt = get_gt(gt_path)
 
-    odometry_data = "data/cone_centers_airport_filtered.txt"                                                                                            #path to GT cone centers. 
-    cone_centers_odometry = fix_cone_centers(odometry_data)                                                                                              #Sorted GT cone centers in numpy array (sorted based on fourth column)
-    frames_odometry = sort_by_frames(cone_centers_odometry)   # List of the frames, where each frame is array of all the cone centers
-    correspondences = preprocess_odometry_est(frames_odometry) # Array of correspondences. (center of cones in frame t and t+1)
-    odometry = get_odometry(correspondences)
-
-    data_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/ConeCenterEst/experiments/cone_centers_airport_valid_lenscanline_timingtest.txt"
+    #**********************************************************************JANUS AND STEFAN ODOMETRY**************************************
+    # odometry_data = "data/cone_centers_airport_filtered.txt"                                                                                            #path to GT cone centers. 
+    # cone_centers_odometry = fix_cone_centers(odometry_data)                                                                                              #Sorted GT cone centers in numpy array (sorted based on fourth column)
+    # frames_odometry = sort_by_frames(cone_centers_odometry)   # List of the frames, where each frame is array of all the cone centers
+    # correspondences = preprocess_odometry_est(frames_odometry) # Array of correspondences. (center of cones in frame t and t+1)
+    # odometry = get_odometry(correspondences)
+    #*************************************************************************************************************************************
+   
+   
+    data_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/experiments/cone_centers_airport_valid_lenscanline_timingtest2.txt"
     cone_centers = fix_cone_centers(data_path)  #Loads the conecenter estimates into a numpy array
-    #print(cone_centers)
+    #print(len(cone_centers))
     frames = sort_by_frames(cone_centers)   # List of the frames, where each frame is array of all the cone centers in that frame
-    #correspondences = preprocess_odometry_est(frames)     #DET HER HAR JEG TILFØJET
-    #print(correspondences)
-    #odometry = get_odometry(correspondences)                    # DET HER HAR JEG TILFØJET husk at udkommentere de rigtige linjer ovenfor
-
+    correspondences = preprocess_odometry_est(frames)               #DET HER HAR JEG TILFØJET
+    odometry = get_odometry(correspondences)                    # DET HER HAR JEG TILFØJET husk at udkommentere de rigtige linjer ovenfor
     cumulative_transform = []
     current_transform = np.identity(3)
     i = 0
-    print(odometry[0])
+
+    for i in range(10):
+        print(odometry[i])
+
     for transform in odometry:
+        #print("THIS IS THE TRANSFORM: ", transform)
         i += 1
+        #print("TRANSFORM: ", transform)
+        #print("CURRENT TRANSFORM: ", current_transform)
         cumulative_transform.append(current_transform)
         current_transform = current_transform @ transform
 

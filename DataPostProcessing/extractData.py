@@ -30,12 +30,12 @@ def extract_synchronized_data(bag_file, output_dir_img, output_dir_pc, output_di
 
             if img_pc_time_diff < time_threshold and img_imu_time_diff < time_threshold and pc_imu_time_diff < time_threshold:
                 cv_image = bridge.imgmsg_to_cv2(img_msg, "bgr8")
-                img_filename = f"{output_dir_img}/image_{counter}.jpg"
+                img_filename = f"{output_dir_img}/{counter}.jpg"
                 cv2.imwrite(img_filename, cv_image)
 
                 gen = pc2.read_points(closest_pc_msg, field_names=("x", "y", "z", "intensity", "ring", "time"), skip_nans=True)
                 df = pd.DataFrame(list(gen), columns=["x", "y", "z", "intensity", "ring", "time"])
-                pc_filename = f"{output_dir_pc}/pointcloud_{counter}.csv"
+                pc_filename = f"{output_dir_pc}/{counter}.csv"
                 df.to_csv(pc_filename, index=False)
 
                 #Saving last 10 imu messages first index is the "oldest" timestamp
@@ -60,13 +60,13 @@ def extract_synchronized_data(bag_file, output_dir_img, output_dir_pc, output_di
                     imu_data.append(data)
 
                 imu_df = pd.DataFrame(imu_data)
-                imu_filename = f"{output_dir_imu}/imu_data_{counter}.csv"
+                imu_filename = f"{output_dir_imu}/{counter}.csv"
                 imu_df.to_csv(imu_filename, index=False)
 
                 counter += 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Extract synchronized images, point clouds, and IMU data from a rosbag file.")
     parser.add_argument("bag_file", help="Path to the bag file.")
     parser.add_argument("output_dir_img", help="Path to the output directory for images.")

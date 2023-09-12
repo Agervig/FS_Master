@@ -12,7 +12,22 @@ class CamParams:
         self.radial_dist = self.getRadial()
         self.tang_dist = self.getTang()
         self.A = self.getA()
+        self.H = np.array([
+                [0.0222886, -0.999716, -0.00838127, 0.017202133],
+                [-0.0579, 0.0070785, -0.998297, 0.1632],
+                [0.998074, 0.0227359, -0.0577259, 0.137166],
+                [0, 0, 0, 1]
+                ])
+        self.P_thomas = np.array([
+                [1417.05365482, 0, 943.28929921, 0],
+                [0, 1414.17073022, 621.71082445, 0],
+                [0, 0, 1, 0]
+])
 
+
+    def getPthomas(self):
+        return self.P_thomas
+    
     def getRadial(self):
         #radial_dist = np.array([-0.2410, 0.0931])
         radial_dist = np.array([-0.1641425, 0.0967652]) #Thomas distortion param
@@ -35,13 +50,16 @@ class CamParams:
         #path = os.path.join(self.path, "projection_airport.csv")
         #K = genfromtxt(path, delimiter=",")
         #H = [[0.9955, 0.0774, 0.0539, 0.0046],[0.0635, -0.1272, -0.9898, 0.0435],[-0.0698, 0.9889, -0.1315, -0.0979], [0, 0, 0, 1]]
-        H = [[0.047313, -0.998869, -0.004734, -0.020673], [-0.080818, 0.000896, -0.996728, 0.101220], [0.995695, 0.047541, -0.080684, 0.114573],[0, 0, 0, 1]] #Thomas
+        H = [[0.0222886, -0.999716, -0.008381, -0.020202], [-0.057900, 0.007079, -0.998297, 0.1632], [0.998074, 0.022736, -0.057726, 0.137166], [0, 0, 0, 1]] #Thomas
         H = np.asarray(H)
         K = self.K
         zeroes = np.zeros((3,1))
         K = np.hstack((K, zeroes))
         P = K @ H
         return P
+    
+    def getH(self):
+        return self.H
 
     def getFov(self):
         #path = os.path.join(self.path, "fov_new.csv")

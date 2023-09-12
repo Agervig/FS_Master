@@ -1,14 +1,6 @@
 import numpy as np
 
-test = [[1,1,1,01],[2,2,2,1],[3,3,3,2]]
-test = np.asarray(test)
+timestamps = np.array([1, 1.5, 2, 3, 4.5, 5, 7])  # Convert your list to a NumPy array
+time_deltas = np.diff(timestamps)
 
-frames = []
-for i in range(3):
-   # print(i)
-    #print(test[test[:,3]])
-    frame_cones = test[test[:,3]==i]
-    frames.append(frame_cones)
-
-#print(test)
-print(frames)
+print(time_deltas)

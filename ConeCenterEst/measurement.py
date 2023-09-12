@@ -11,11 +11,11 @@ class Measurement:
         self.indx = indx
         #self.mask_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/Segmentation/experiments/masks"           #This is the output of the segmentation network
         #self.img_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/old_data/final_test/imgs_airport/"
-        self.mask_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/masks"           #This is the output of the segmentation network
-        self.img_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/images_car/"
+        self.mask_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/experiments/masks2"           #This is the output of the segmentation network
+        self.img_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/images_car2/"
         self.pcd_path = "../data/pcds/"
         #self.csv_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/old_data/final_test/csv_airport/"              # LIDAR data
-        self.csv_path  = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/point_clouds/"
+        self.csv_path  = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/point_clouds2/"
 
         self.image_type = ".jpg"
         self.cam_params = self.getCamParams()
@@ -96,66 +96,138 @@ class Measurement:
 
     def projectLidarToImage(self):
 
-        points = self.data3D.points             #All points from the LIDAR of one timestamp. It is an array of (n, 3) where n is the number of points. 3 is the x,y,z coordinate of the point.
-        # sorted_points are all the LiDAR points sorted, to make the reconstruction easier
-        sorted_points = self.sortPoints(points)         #The sortPoints first calculate the bearing and azimuth angle. Then it sorts the points based on these angles and add the angles to the point resulting in a shape of (n, 5)
+        # points = self.data3D.points             #All points from the LIDAR of one timestamp. It is an array of (n, 3) where n is the number of points. 3 is the x,y,z coordinate of the point.
+        # # sorted_points are all the LiDAR points sorted, to make the reconstruction easier
+        # sorted_points = self.sortPoints(points)         #The sortPoints first calculate the bearing and azimuth angle. Then it sorts the points based on these angles and add the angles to the point resulting in a shape of (n, 5)
+        # self.data3D.points = sorted_points
+
+        # #pointcloud data
+        # pcd = o3d.geometry.PointCloud()
+        # pcd.points = o3d.utility.Vector3dVector(points) #Don't know what this is used for yet
+
+        # mask = self.mask.mask
+
+
+        # filtered_fov = self.data3D.filterFOV() #All points in the field of view of the camera
+        # max_range = 14  #Hvordan er den range her defineret er det 14 meter?
+        # filtered_fov = self.filterRange(filtered_fov, max_range) #Liste af points hvor points over max range er sorteret fra. 
+
+        # f = open("number_of_points.txt", "a")
+        # f.write(str(len(filtered_fov)) + " ")
+
+   
+        # homogenious_pts = self.makeHomogenious(filtered_fov)    #Homogenioused points. A fourth column with a 1 is added for each point: (n, 4) where 4 is (x,y,z,1)
+        # #print("HOMO POINTS: ", homogenious_pts)
+        # transformed_points = self.transformPoints(homogenious_pts)   # 2D transformed points from the point cloud
+
+        # transformed_points, filtered_indx = self.filterPointsOutsideImg(transformed_points, mask.shape)
+
+
+
+
+        #The below is implemented by Thomas Jensen************************************************************************************************
+        points = self.data3D.points
+
+        R = np.array([
+            [0, -1, 0],
+            [1, 0, 0],
+            [0, 0, 1]
+            ])
+        #rotated_points = np.dot(R, points.T).T
+        sorted_points = self.sortPoints(points)
         self.data3D.points = sorted_points
 
-        #pointcloud data
-        pcd = o3d.geometry.PointCloud()
-        pcd.points = o3d.utility.Vector3dVector(points) #Don't know what this is used for yet
+        #Homogenizing points
+        points_homo =  np.hstack((points, np.ones((points.shape[0], 1))))     
 
-        mask = self.mask.mask
-        filtered_fov = self.data3D.filterFOV() #All points in the field of view of the camera
-
-        max_range = 14  #Hvordan er den range her defineret er det 14 meter?
-        filtered_fov = self.filterRange(filtered_fov, max_range) #Liste af points hvor points over max range er sorteret fra. 
-        f = open("number_of_points.txt", "a")
-        f.write(str(len(filtered_fov)) + " ")
-
-        homogenious_pts = self.makeHomogenious(filtered_fov)    #Homogenioused points. A fourth column with a 1 is added for each point: (n, 4) where 4 is (x,y,z,1)
-        transformed_points = self.transformPoints(homogenious_pts)   # 2D transformed points from the point cloud
-        transformed_points, filtered_indx = self.filterPointsOutsideImg(transformed_points, mask.shape)
-    
-
-        colored_3d = np.empty((0,3))
-        colored_2d = []                 # 2D locations of points that overlap with the masks
-        all_3d_in_2d = []               # All 3D lidar points warped in 2D
-        color_array = np.zeros((points.shape))
-        class_indices = []              # Classes of the points in color_3D array
-        cone_color = [] 
-        for i, pc in enumerate(transformed_points):
-            xp = pc[0]
-            yp = pc[1]
-
-            all_3d_in_2d.append((xp,yp))
-            if mask[yp, xp] == 0: 
-                continue
-
-            colored_2d.append((xp, yp))
-            cone_color.append(mask[yp,xp])
-
-            if mask[yp,xp] == 1:
-                colored_3d = np.append(colored_3d, [filtered_fov[filtered_indx[i]]], axis = 0)
-                color_array[filtered_indx[i], :] = [1, 0.3, 0]
-                class_indices.append(1)
-            elif mask[yp,xp] == 2:
-                colored_3d = np.append(colored_3d, [filtered_fov[filtered_indx[i]]], axis = 0)
-                color_array[filtered_indx[i], :] = [1, 0, 1]
-                class_indices.append(2)
-            elif mask[yp, xp] == 3:
-                colored_3d = np.append(colored_3d, [filtered_fov[filtered_indx[i]]], axis = 0)
-                color_array[filtered_indx[i], :] = [0, 0, 1]
-                class_indices.append(3)
-            elif mask[yp, xp] == 4:
-                colored_3d = np.append(colored_3d, [filtered_fov[filtered_indx[i]]], axis = 0)
-                color_array[filtered_indx[i], :] = [0, 1, 1]
-                class_indices.append(4)
-
-        pcd = o3d.geometry.PointCloud()
+        #Transforming to camera frame
+        points_cam = np.dot(self.cam_params.H, points_homo.T)
         
-        pcd.points = o3d.utility.Vector3dVector(colored_3d)
-        self.clusterPoints(pcd,cone_color)
+        #Projecting to image plane
+        points_2d = np.dot(self.cam_params.P_thomas, points_cam).T
+
+        #Unhomogenizing
+        points_2d /= points_2d[:, 2].reshape(-1, 1)
+        points_2d = points_2d[:, :2]
+
+        #Checking which points are inside the image plane
+        valid_x = (points_2d[:, 0] >= 0) & (points_2d[:, 0] < 1920)
+        valid_y  = (points_2d[:, 1] >= 0) & (points_2d[:, 1] < 1200)
+        valid_points = valid_x & valid_y
+
+        #Storing the valid points and the index of that point
+        valid_indices = np.where(valid_points)[0]
+        filtered_points = points_2d[valid_points].astype(int)
+
+        #self.show_3d_warped_2d(filtered_points)
+
+        mask = self.mask.mask 
+        #List that stores the 3D points whose 2D projections match one of the class label 1,2,3 or 4
+        valid_3d = []
+        class_labels = []
+        #iterating over all the filtered point, checking the they match with one of the classes in the mask.
+        #if it does the index is mapped back to the index from the point_cam i.e. the pointcloud that is transformed to the camera frame
+        for idx, point in enumerate(filtered_points):
+            x, y = point
+            if mask[y, x] in [1, 2, 3, 4]:
+                point_cam_idx = valid_indices[idx]
+                valid_3d.append(points_cam[:, point_cam_idx])
+                class_labels.append(mask[y, x])
+
+        valid_3d = np.array(valid_3d)
+        valid_3d = valid_3d[:, :3]
+
+
+
+        pcd = o3d.geometry.PointCloud()
+        pcd.points = o3d.utility.Vector3dVector(valid_3d)
+        self.clusterPoints(pcd,class_labels)
+
+        #From here the code is again written by Janus and Stefan**********************************************************************************
+
+
+
+
+
+        #print("Transformed points inside img: ", transformed_points)
+
+        # colored_3d = np.empty((0,3))
+        # colored_2d = []                 # 2D locations of points that overlap with the masks
+        # all_3d_in_2d = []               # All 3D lidar points warped in 2D
+        # color_array = np.zeros((points.shape))
+        # class_indices = []              # Classes of the points in color_3D array
+        # cone_color = [] 
+        # for i, pc in enumerate(transformed_points):
+        #     xp = pc[0]
+        #     yp = pc[1]
+        #     all_3d_in_2d.append((xp,yp))
+        #     if mask[yp, xp] == 0: 
+        #         continue
+
+        #     colored_2d.append((xp, yp))
+        #     cone_color.append(mask[yp,xp])
+
+        #     if mask[yp,xp] == 1:
+        #         colored_3d = np.append(colored_3d, [filtered_fov[filtered_indx[i]]], axis = 0)
+        #         color_array[filtered_indx[i], :] = [1, 0.3, 0]        #Large orange cone (Orange)
+        #         class_indices.append(1)
+        #     elif mask[yp,xp] == 2:
+        #         colored_3d = np.append(colored_3d, [filtered_fov[filtered_indx[i]]], axis = 0)
+        #         color_array[filtered_indx[i], :] = [1, 0, 1]          #Small orange cone (purple)
+        #         class_indices.append(2)
+        #     elif mask[yp, xp] == 3:
+        #         colored_3d = np.append(colored_3d, [filtered_fov[filtered_indx[i]]], axis = 0)
+        #         color_array[filtered_indx[i], :] = [0, 0, 1]
+        #         class_indices.append(3)
+        #     elif mask[yp, xp] == 4:
+        #         colored_3d = np.append(colored_3d, [filtered_fov[filtered_indx[i]]], axis = 0)
+        #         color_array[filtered_indx[i], :] = [0, 1, 1]
+        #         class_indices.append(4)
+
+        # pcd = o3d.geometry.PointCloud()
+        
+        # pcd.points = o3d.utility.Vector3dVector(colored_3d)
+        # self.clusterPoints(pcd,cone_color)
         #self.show_3d_warped_2d(pcd.points)
 
     # To see where the LiDAR points are relative to the camera, this function can be used
@@ -358,7 +430,14 @@ class Measurement:
 
             else:
                 break
-        right_of_cone = self.data3D.points[idx+1]
+    #****************************************************************** SEE IF THIS CAN BE FIXED LATER ON  ADDED BY THOMAS*************************************************************   
+        if idx + 1 >= len(self.data3D.points): 
+            print("THE INDEX IS OUT OF BOUNDS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            right_of_cone = self.data3D.points[idx-1]
+        else:    
+            right_of_cone = self.data3D.points[idx+1]
+    #**********************************************************************************************************************************************************
+        #right_of_cone = self.data3D.points[idx+1]
 
         distance = math.sqrt((leftmost_pt[0] - rightmost_pt[0]) ** 2 + (leftmost_pt[1] - rightmost_pt[1]) ** 2 + (leftmost_pt[2] - rightmost_pt[2]) ** 2)
        

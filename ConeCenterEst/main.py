@@ -21,14 +21,16 @@ def get_cone_centers():
     ground_truth = np.arange(1, 10, 0.2)
 
     #csv_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/old_data/final_test/csv_airport"
-    csv_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/point_clouds"
+    csv_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/point_clouds2"
     
 
 
-    #for file in sorted(os.listdir(csv_path)): #Old sort without key cant sort numerical data correct (THOMAS)
-    for file in sorted(os.listdir(csv_path), key=lambda x: int(x[:-4])):
+    #for file in sorted(os.listdir(csv_path)): 
+    for file in sorted(os.listdir(csv_path), key=lambda x: int(x[:-4])): #Added by Thomas Agervig Jensen
+
         start = time.time()
         indx = file[:-4]
+        print(file)
 
         measurement = Measurement(indx)
         measurement.projectLidarToImage()
@@ -40,16 +42,15 @@ def get_cone_centers():
         # pcd.points = o3d.utility.Vector3dVector(pt_ar)
         # measurement.show_3d_warped_2d(pcd.points)
         centers = measurement.data3D.center_cones
-        print(indx)
-        print(centers)
-        f = open("/home/agervig/git/FSM/MSc_Fstudent_SLAM/ConeCenterEst/experiments/cone_centers_airport_valid_lenscanline_timingtest.txt", "a")        #Contain x, y of cone center, label and a index dived by 4 for some reason (x,y,label, idx/4)
+
+        f = open("/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/experiments/cone_centers_airport_valid_lenscanline_timingtest2.txt", "a")        #Contain x, y of cone center, label and a index dived by 4 for some reason (x,y,label, idx/4)
 
         for cones in centers:
             f.write(str(cones[0]) + " " + str(cones[1]) + " " + str(cones[2]) + " " + str(int(indx)) + "\n")
         #    f.write(str(cones[0]) + " " + str(cones[1]) + " " + str(cones[2]) + " " + str(int(indx) / 1) + "\n")
 
         end = time.time()
-        t = open("/home/agervig/git/FSM/MSc_Fstudent_SLAM/ConeCenterEst/experiments/sync_timing.txt", "a")
+        t = open("/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/experiments/sync_timing2.txt", "a")
         t.write(str(end-start) + " " + str(len(centers)) + "\n")
 
 def main():
