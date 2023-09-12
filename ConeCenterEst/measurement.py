@@ -133,8 +133,9 @@ class Measurement:
             [1, 0, 0],
             [0, 0, 1]
             ])
+        rot_points = np.dot(R, points.T).T
         #rotated_points = np.dot(R, points.T).T
-        sorted_points = self.sortPoints(points)
+        sorted_points = self.sortPoints(rot_points)
         self.data3D.points = sorted_points
 
         #Homogenizing points

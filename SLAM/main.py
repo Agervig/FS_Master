@@ -104,7 +104,6 @@ def get_odometry(correspondences):
         next_frame = np.array(correspondences[i, 1])
 
         if len(next_frame) == 0 or len(current_frame) == 0:
-            #print("I WAS HERE IN THIS SHIT")
             transformations.append(prev_transform)
             continue 
 
@@ -183,7 +182,7 @@ def main():
     #*************************************************************************************************************************************
    
    
-    data_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/experiments/cone_centers_airport_valid_lenscanline_timingtest2.txt"
+    data_path = "/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/experiments/cone_centers_airport_valid_lenscanline_timingtest3.txt"
     cone_centers = fix_cone_centers(data_path)  #Loads the conecenter estimates into a numpy array
     #print(len(cone_centers))
     frames = sort_by_frames(cone_centers)   # List of the frames, where each frame is array of all the cone centers in that frame
@@ -193,11 +192,16 @@ def main():
     current_transform = np.identity(3)
     i = 0
 
-    for i in range(10):
-        print(odometry[i])
+    print("HERE IS THE FIRST ODOMETRY: ", type(odometry[0]))
+    #matrix = [[1,0,0], [0,1,0.03],[0,0,1]]
+    #matrix = np.asarray(matrix)
+    #odometry = [matrix for _ in range(200)]
+    print("HERE IS ONE AFTER: ", type(odometry[0]))
 
     for transform in odometry:
-        #print("THIS IS THE TRANSFORM: ", transform)
+        print("THIS IS THE TRANSFORM: ")
+        print(transform)
+        #time.sleep(0.5)
         i += 1
         #print("TRANSFORM: ", transform)
         #print("CURRENT TRANSFORM: ", current_transform)

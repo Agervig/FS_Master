@@ -43,14 +43,14 @@ def get_cone_centers():
         # measurement.show_3d_warped_2d(pcd.points)
         centers = measurement.data3D.center_cones
 
-        f = open("/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/experiments/cone_centers_airport_valid_lenscanline_timingtest2.txt", "a")        #Contain x, y of cone center, label and a index dived by 4 for some reason (x,y,label, idx/4)
+        f = open("/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/experiments/cone_centers_airport_valid_lenscanline_timingtest3.txt", "a")        #Contain x, y of cone center, label and a index dived by 4 for some reason (x,y,label, idx/4)
 
         for cones in centers:
             f.write(str(cones[0]) + " " + str(cones[1]) + " " + str(cones[2]) + " " + str(int(indx)) + "\n")
         #    f.write(str(cones[0]) + " " + str(cones[1]) + " " + str(cones[2]) + " " + str(int(indx) / 1) + "\n")
 
         end = time.time()
-        t = open("/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/experiments/sync_timing2.txt", "a")
+        t = open("/home/agervig/git/FSM/MSc_Fstudent_SLAM/data/my_data/1/experiments/sync_timing3.txt", "a")
         t.write(str(end-start) + " " + str(len(centers)) + "\n")
 
 def main():
