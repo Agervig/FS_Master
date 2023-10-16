@@ -1,0 +1,2 @@
+aruco_mapping:aruco_ros/aruco:aruco_ros/aruco_msgs:aruco_ros/aruco_ros:camera_control_msgs:dragandbot_common/dnb_msgs:image_rescaler:lidar_camera_calibration:pylon_camera:vectornav:velodyne/velodyne:velodyne/velodyne_driver:velodyne/velodyne_laserscan:velodyne/velodyne_msgs:velodyne/velodyne_pcl:velodyne/velodyne_pointcloud:vision_opencv/cv_bridge:vision_opencv/image_geometry:vision_opencv/opencv_tests:vision_opencv/vision_opencv:wss
+-DCATKIN_DEVEL_PREFIX=/home/agervig-pi/sensor_record/devel -DCMAKE_INSTALL_PREFIX=/home/agervig-pi/sensor_record/install -G Unix Makefiles

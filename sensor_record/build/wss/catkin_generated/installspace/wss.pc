@@ -1,0 +1,8 @@
+prefix=/home/agervig-pi/sensor_record/install
+
+Name: wss
+Description: Description of wss
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: rospy std_msgs message_runtime

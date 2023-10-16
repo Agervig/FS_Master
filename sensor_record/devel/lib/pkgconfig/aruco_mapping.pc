@@ -1,0 +1,8 @@
+prefix=/home/agervig-pi/sensor_record/devel
+
+Name: aruco_mapping
+Description: Description of aruco_mapping
+Version: 1.0.4
+Cflags: -I/home/agervig-pi/sensor_record/devel/include -I/home/agervig-pi/sensor_record/src/aruco_mapping/include
+Libs: -L${prefix}/lib 
+Requires: 

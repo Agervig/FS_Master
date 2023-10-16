@@ -1,0 +1,8 @@
+prefix=/home/agervig-pi/sensor_record/devel
+
+Name: image_rescaler
+Description: Description of image_rescaler
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
